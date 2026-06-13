@@ -4,11 +4,13 @@
   display: flex;
   flex-direction: column;
   padding-bottom: 20px;
+  flex: 1;
+  min-height: 0;
 }
 
 .elements {
+  flex: 1;
   min-height: 100px;
-
   overflow-y: scroll;
   list-style-type: none;
   margin: 0;

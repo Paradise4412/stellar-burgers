@@ -1,9 +1,12 @@
 .containerMain {
   display: flex;
   flex-direction: column;
+  flex: 1;
+  min-height: 0;
   overflow: hidden;
   max-width: 1240px;
   margin: 0 auto;
+  width: 100%;
 }
 
 .title {
@@ -16,6 +19,7 @@
 .main {
   display: flex;
   justify-content: space-between;
-  height: 100%;
+  flex: 1;
+  min-height: 0;
   overflow: hidden;
 }

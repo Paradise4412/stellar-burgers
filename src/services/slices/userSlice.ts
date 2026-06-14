@@ -11,6 +11,17 @@ import {
 import { deleteCookie, getCookie, setCookie } from '../../utils/cookie';
 import { TUser } from '@utils-types';
 
+type TApiError = {
+  message?: string;
+};
+
+const getErrorText = (payload: unknown) => {
+  if (payload && typeof payload === 'object' && 'message' in payload) {
+    return (payload as TApiError).message || 'Ошибка';
+  }
+  return 'Ошибка';
+};
+
 type TState = {
   user: TUser | null;
   isAuth: boolean;
@@ -22,7 +33,7 @@ type TState = {
 const initialState: TState = {
   user: null,
   isAuth: false,
-  isAuthChecked: true,
+  isAuthChecked: false,
   loading: false,
   error: null
 };
@@ -96,9 +107,7 @@ const slice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(checkUser.pending, (state) => {
-        if (getCookie('accessToken')) {
-          state.isAuthChecked = false;
-        }
+        state.isAuthChecked = false;
       })
       .addCase(checkUser.fulfilled, (state, action) => {
         state.isAuthChecked = true;
@@ -118,11 +127,11 @@ const slice = createSlice({
         state.loading = false;
         state.user = action.payload;
         state.isAuth = true;
+        state.isAuthChecked = true;
       })
       .addCase(register.rejected, (state, action) => {
         state.loading = false;
-        state.error =
-          (action.payload as { message?: string })?.message || 'Ошибка';
+        state.error = getErrorText(action.payload);
       })
       .addCase(login.pending, (state) => {
         state.loading = true;
@@ -132,11 +141,11 @@ const slice = createSlice({
         state.loading = false;
         state.user = action.payload;
         state.isAuth = true;
+        state.isAuthChecked = true;
       })
       .addCase(login.rejected, (state, action) => {
         state.loading = false;
-        state.error =
-          (action.payload as { message?: string })?.message || 'Ошибка';
+        state.error = getErrorText(action.payload);
       })
       .addCase(logout.fulfilled, (state) => {
         state.user = null;

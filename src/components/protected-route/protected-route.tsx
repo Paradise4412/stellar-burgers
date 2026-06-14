@@ -23,7 +23,9 @@ export const ProtectedRoute: FC<TProps> = ({
   }
 
   if (onlyUnAuth && isAuth) {
-    return <Navigate to='/' replace />;
+    const from = (location.state as { from?: { pathname: string } })?.from
+      ?.pathname;
+    return <Navigate to={from || '/'} replace />;
   }
 
   if (!onlyUnAuth && !isAuth) {

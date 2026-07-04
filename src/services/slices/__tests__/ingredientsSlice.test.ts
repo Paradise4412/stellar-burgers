@@ -21,12 +21,12 @@ const initialState = {
   error: null
 };
 
-describe('ingredientsSlice reducer', () => {
-  test('неизвестный экшен с undefined', () => {
+describe('редьюсер ingredientsSlice', () => {
+  test('должен вернуть начальное состояние при неизвестном экшене', () => {
     expect(reducer(undefined, { type: 'UNKNOWN' })).toEqual(initialState);
   });
 
-  test('getIngredients.pending', () => {
+  test('должен установить loading в true при getIngredients.pending', () => {
     const state = reducer(initialState, { type: getIngredients.pending.type });
     expect(state).toEqual({
       items: [],
@@ -35,7 +35,7 @@ describe('ingredientsSlice reducer', () => {
     });
   });
 
-  test('getIngredients.fulfilled', () => {
+  test('должен сохранить ингредиенты при getIngredients.fulfilled', () => {
     const state = reducer(
       { ...initialState, loading: true },
       { type: getIngredients.fulfilled.type, payload: [ingredient] }
@@ -47,7 +47,7 @@ describe('ingredientsSlice reducer', () => {
     });
   });
 
-  test('getIngredients.rejected', () => {
+  test('должен сохранить ошибку при getIngredients.rejected', () => {
     const state = reducer(
       { ...initialState, loading: true },
       {

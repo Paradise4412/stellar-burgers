@@ -52,23 +52,23 @@ const initialState = {
   orderModalData: null
 };
 
-describe('constructorSlice reducer', () => {
-  test('неизвестный экшен с undefined', () => {
+describe('редьюсер burgerConstructor', () => {
+  test('должен вернуть начальное состояние при неизвестном экшене', () => {
     expect(reducer(undefined, { type: 'UNKNOWN' })).toEqual(initialState);
   });
 
-  test('setBun', () => {
+  test('должен установить булку при setBun', () => {
     const state = reducer(initialState, setBun(bun));
     expect(state.bun).toEqual({ ...bun, id: bun._id });
     expect(state.ingredients).toEqual([]);
   });
 
-  test('addItem', () => {
+  test('должен добавить ингредиент при addItem', () => {
     const state = reducer(initialState, addItem(main));
     expect(state.ingredients).toEqual([main]);
   });
 
-  test('removeItem', () => {
+  test('должен удалить ингредиент при removeItem', () => {
     const state = reducer(
       { ...initialState, ingredients: [main, mainSecond] },
       removeItem('main-id-1')
@@ -76,7 +76,7 @@ describe('constructorSlice reducer', () => {
     expect(state.ingredients).toEqual([mainSecond]);
   });
 
-  test('moveItem up', () => {
+  test('должен переместить ингредиент вверх при moveItem', () => {
     const state = reducer(
       { ...initialState, ingredients: [main, mainSecond] },
       moveItem({ index: 1, direction: 'up' })
@@ -84,7 +84,7 @@ describe('constructorSlice reducer', () => {
     expect(state.ingredients).toEqual([mainSecond, main]);
   });
 
-  test('moveItem down', () => {
+  test('должен переместить ингредиент вниз при moveItem', () => {
     const state = reducer(
       { ...initialState, ingredients: [main, mainSecond] },
       moveItem({ index: 0, direction: 'down' })
@@ -92,7 +92,7 @@ describe('constructorSlice reducer', () => {
     expect(state.ingredients).toEqual([mainSecond, main]);
   });
 
-  test('clearOrder', () => {
+  test('должен очистить конструктор при clearOrder', () => {
     const state = reducer(
       {
         ...initialState,
@@ -105,7 +105,7 @@ describe('constructorSlice reducer', () => {
     expect(state.ingredients).toEqual([]);
   });
 
-  test('closeOrderModal', () => {
+  test('должен закрыть модальное окно заказа при closeOrderModal', () => {
     const state = reducer(
       {
         ...initialState,
@@ -118,12 +118,12 @@ describe('constructorSlice reducer', () => {
     expect(state.orderModalData).toBeNull();
   });
 
-  test('createOrder.pending', () => {
+  test('должен установить orderRequest в true при createOrder.pending', () => {
     const state = reducer(initialState, { type: createOrder.pending.type });
     expect(state.orderRequest).toBe(true);
   });
 
-  test('createOrder.fulfilled', () => {
+  test('должен сохранить номер заказа и очистить конструктор при createOrder.fulfilled', () => {
     const state = reducer(
       {
         ...initialState,
@@ -142,7 +142,7 @@ describe('constructorSlice reducer', () => {
     expect(state.ingredients).toEqual([]);
   });
 
-  test('createOrder.rejected', () => {
+  test('должен сбросить orderRequest при createOrder.rejected', () => {
     const state = reducer(
       { ...initialState, orderRequest: true },
       { type: createOrder.rejected.type }

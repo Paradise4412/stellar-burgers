@@ -9,7 +9,7 @@ type TState = {
   orderModalData: { number: number } | null;
 };
 
-const initialState: TState = {
+export const initialState: TState = {
   bun: null,
   ingredients: [],
   orderRequest: false,

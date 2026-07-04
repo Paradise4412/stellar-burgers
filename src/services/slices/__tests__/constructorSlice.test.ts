@@ -3,6 +3,7 @@ import reducer, {
   clearOrder,
   closeOrderModal,
   createOrder,
+  initialState,
   moveItem,
   removeItem,
   setBun
@@ -43,13 +44,6 @@ const mainSecond: TConstructorIngredient = {
   _id: '643d69a5c3f7b9001cfa093f',
   name: 'Мясо бессмертных моллюсков Protostomia',
   id: 'main-id-2'
-};
-
-const initialState = {
-  bun: null,
-  ingredients: [],
-  orderRequest: false,
-  orderModalData: null
 };
 
 describe('редьюсер burgerConstructor', () => {

@@ -1,4 +1,4 @@
-import reducer, { getIngredients } from '../ingredientsSlice';
+import reducer, { getIngredients, initialState } from '../ingredientsSlice';
 import { TIngredient } from '@utils-types';
 
 const ingredient: TIngredient = {
@@ -13,12 +13,6 @@ const ingredient: TIngredient = {
   image: 'https://code.s3.yandex.net/react/code/bun-02.png',
   image_mobile: 'https://code.s3.yandex.net/react/code/bun-02-mobile.png',
   image_large: 'https://code.s3.yandex.net/react/code/bun-02-large.png'
-};
-
-const initialState = {
-  items: [],
-  loading: false,
-  error: null
 };
 
 describe('редьюсер ingredientsSlice', () => {

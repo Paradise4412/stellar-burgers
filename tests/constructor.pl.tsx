@@ -1,5 +1,7 @@
-import { test, expect, Page, BrowserContext } from '@playwright/test';
+import { test, expect, Page, BrowserContext, Locator } from '@playwright/test';
 import path from 'path';
+
+import { mockBun, mockMain, mockOrderNumber } from './har-data';
 
 const harsDir = path.join(__dirname, 'hars');
 
@@ -40,6 +42,11 @@ const clearAuthTokens = async (context: BrowserContext, page: Page) => {
   await page.evaluate(() => localStorage.clear());
 };
 
+const getConstructor = (page: Page): Locator =>
+  page.getByTestId('burger-constructor');
+
+const getModal = (page: Page): Locator => page.locator('#modals');
+
 test.describe('Страница конструктора бургера', () => {
   test.beforeEach(async ({ page }) => {
     await setupApiMocks(page);
@@ -49,34 +56,34 @@ test.describe('Страница конструктора бургера', () => 
     test('должен добавлять булку и начинку в конструктор', async ({ page }) => {
       await page.goto('/');
 
+      const constructor = getConstructor(page);
+
       await expect(
-        page.locator('li').filter({ hasText: 'Краторная булка N-200i' })
+        page.locator('li').filter({ hasText: mockBun.name })
       ).toBeVisible();
 
       await page
         .locator('li')
-        .filter({ hasText: 'Краторная булка N-200i' })
+        .filter({ hasText: mockBun.name })
         .getByRole('button', { name: 'Добавить' })
         .click();
 
+      await expect(constructor.getByTestId('constructor-bun-top')).toContainText(
+        `${mockBun.name} (верх)`
+      );
       await expect(
-        page.getByText('Краторная булка N-200i (верх)')
-      ).toBeVisible();
-      await expect(
-        page.getByText('Краторная булка N-200i (низ)')
-      ).toBeVisible();
+        constructor.getByTestId('constructor-bun-bottom')
+      ).toContainText(`${mockBun.name} (низ)`);
 
       await page
         .locator('li')
-        .filter({ hasText: 'Биокотлета из марсианской Магнолии' })
+        .filter({ hasText: mockMain.name })
         .getByRole('button', { name: 'Добавить' })
         .click();
 
-      await expect(
-        page
-          .locator('span.constructor-element__text')
-          .filter({ hasText: 'Биокотлета из марсианской Магнолии' })
-      ).toBeVisible();
+      await expect(constructor.getByTestId('constructor-filling-list')).toContainText(
+        mockMain.name
+      );
     });
   });
 
@@ -86,39 +93,41 @@ test.describe('Страница конструктора бургера', () => 
     }) => {
       await page.goto('/');
 
-      await page
-        .locator('li')
-        .filter({ hasText: 'Краторная булка N-200i' })
-        .getByRole('link')
-        .click();
-
-      await expect(
-        page.getByRole('heading', { name: 'Детали ингредиента' })
-      ).toBeVisible();
-      await expect(
-        page.getByRole('heading', { name: 'Краторная булка N-200i', level: 3 })
-      ).toBeVisible();
-      await expect(page.getByText('420', { exact: true })).toBeVisible();
-
-      await page.locator('#modals button').click();
-
-      await expect(
-        page.getByRole('heading', { name: 'Детали ингредиента' })
-      ).not.toBeVisible();
+      const modal = getModal(page);
 
       await page
         .locator('li')
-        .filter({ hasText: 'Биокотлета из марсианской Магнолии' })
+        .filter({ hasText: mockBun.name })
         .getByRole('link')
         .click();
 
+      const bunDetails = modal.getByTestId('ingredient-details');
+
+      await expect(bunDetails.getByTestId('ingredient-details-name')).toHaveText(
+        mockBun.name
+      );
       await expect(
-        page.getByRole('heading', {
-          name: 'Биокотлета из марсианской Магнолии',
-          level: 3
-        })
-      ).toBeVisible();
-      await expect(page.getByText('4242', { exact: true })).toBeVisible();
+        bunDetails.getByTestId('ingredient-details-calories')
+      ).toHaveText(String(mockBun.calories));
+
+      await modal.locator('button').click();
+
+      await expect(modal.getByTestId('ingredient-details')).not.toBeVisible();
+
+      await page
+        .locator('li')
+        .filter({ hasText: mockMain.name })
+        .getByRole('link')
+        .click();
+
+      const mainDetails = modal.getByTestId('ingredient-details');
+
+      await expect(mainDetails.getByTestId('ingredient-details-name')).toHaveText(
+        mockMain.name
+      );
+      await expect(
+        mainDetails.getByTestId('ingredient-details-calories')
+      ).toHaveText(String(mockMain.calories));
     });
 
     test('должен закрывать модальное окно по клику на крестик и оверлей', async ({
@@ -126,38 +135,32 @@ test.describe('Страница конструктора бургера', () => 
     }) => {
       await page.goto('/');
 
-      await page
-        .locator('li')
-        .filter({ hasText: 'Краторная булка N-200i' })
-        .getByRole('link')
-        .click();
-
-      await expect(
-        page.getByRole('heading', { name: 'Детали ингредиента' })
-      ).toBeVisible();
-
-      await page.locator('#modals button').click();
-
-      await expect(
-        page.getByRole('heading', { name: 'Детали ингредиента' })
-      ).not.toBeVisible();
+      const modal = getModal(page);
 
       await page
         .locator('li')
-        .filter({ hasText: 'Краторная булка N-200i' })
+        .filter({ hasText: mockBun.name })
         .getByRole('link')
         .click();
 
-      await expect(
-        page.getByRole('heading', { name: 'Детали ингредиента' })
-      ).toBeVisible();
+      await expect(modal.getByTestId('ingredient-details')).toBeVisible();
+
+      await modal.locator('button').click();
+
+      await expect(modal.getByTestId('ingredient-details')).not.toBeVisible();
+
+      await page
+        .locator('li')
+        .filter({ hasText: mockBun.name })
+        .getByRole('link')
+        .click();
+
+      await expect(modal.getByTestId('ingredient-details')).toBeVisible();
 
       const { height = 720 } = page.viewportSize() ?? {};
       await page.mouse.click(5, height / 2);
 
-      await expect(
-        page.getByRole('heading', { name: 'Детали ингредиента' })
-      ).not.toBeVisible();
+      await expect(modal.getByTestId('ingredient-details')).not.toBeVisible();
     });
   });
 
@@ -175,29 +178,37 @@ test.describe('Страница конструктора бургера', () => 
     }) => {
       await page.goto('/');
 
+      const constructor = getConstructor(page);
+      const modal = getModal(page);
+
       await page
         .locator('li')
-        .filter({ hasText: 'Краторная булка N-200i' })
+        .filter({ hasText: mockBun.name })
         .getByRole('button', { name: 'Добавить' })
         .click();
 
       await page
         .locator('li')
-        .filter({ hasText: 'Биокотлета из марсианской Магнолии' })
+        .filter({ hasText: mockMain.name })
         .getByRole('button', { name: 'Добавить' })
         .click();
 
-      await page.getByRole('button', { name: 'Оформить заказ' }).click();
+      await constructor.getByRole('button', { name: 'Оформить заказ' }).click();
 
-      await expect(page.getByText('12345')).toBeVisible();
-      await expect(page.getByText('идентификатор заказа')).toBeVisible();
+      await expect(modal.getByTestId('order-number')).toHaveText(
+        String(mockOrderNumber)
+      );
 
-      await expect(page.getByText('Выберите булки')).toHaveCount(2);
-      await expect(page.getByText('Выберите начинку')).toBeVisible();
+      await expect(constructor.getByTestId('constructor-empty-buns')).toHaveCount(
+        2
+      );
+      await expect(
+        constructor.getByTestId('constructor-empty-filling')
+      ).toBeVisible();
 
-      await page.locator('#modals button').click();
+      await modal.locator('button').click();
 
-      await expect(page.getByText('12345')).not.toBeVisible();
+      await expect(modal.getByTestId('order-number')).not.toBeVisible();
     });
   });
 });

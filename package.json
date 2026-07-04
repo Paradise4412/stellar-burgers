@@ -95,7 +95,7 @@
     "format": "prettier ./src --write",
     "test": "jest",
     "test:coverage": "jest --coverage",
-    "test:playwright": "PLAYWRIGHT_BROWSERS_PATH=0 playwright test"
+    "test:playwright": "playwright test"
   },
   "eslintConfig": {
     "extends": [

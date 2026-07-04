@@ -1,5 +1,7 @@
 import { defineConfig } from '@playwright/test';
 
+// Браузеры устанавливаются командой: npx playwright install
+
 export default defineConfig({
   testDir: './tests',
   testMatch: '**/*.pl.tsx',

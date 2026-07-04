@@ -90,6 +90,8 @@ const App = () => {
           <Routes location={background || location}>
             <Route path='/' element={<ConstructorPage />} />
             <Route path='/feed' element={<Feed />} />
+            <Route path='/ingredients/:id' element={<IngredientDetails />} />
+            <Route path='/feed/:number' element={<OrderInfo />} />
 
             <Route element={<ProtectedRoute onlyUnAuth />}>
               <Route path='/login' element={<Login />} />
@@ -101,25 +103,8 @@ const App = () => {
             <Route element={<ProtectedRoute />}>
               <Route path='/profile' element={<Profile />} />
               <Route path='/profile/orders' element={<ProfileOrders />} />
+              <Route path='/profile/orders/:number' element={<OrderInfo />} />
             </Route>
-
-            {!background && (
-              <>
-                <Route
-                  path='/ingredients/:id'
-                  element={<IngredientDetails />}
-                />
-                <Route path='/feed/:number' element={<OrderInfo />} />
-                <Route
-                  path='/profile/orders/:number'
-                  element={
-                    <ProtectedRoute>
-                      <OrderInfo />
-                    </ProtectedRoute>
-                  }
-                />
-              </>
-            )}
 
             <Route path='*' element={<NotFound404 />} />
           </Routes>

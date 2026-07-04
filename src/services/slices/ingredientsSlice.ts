@@ -8,7 +8,7 @@ type TState = {
   error: string | null;
 };
 
-const initialState: TState = {
+export const initialState: TState = {
   items: [],
   loading: false,
   error: null
